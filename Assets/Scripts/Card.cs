@@ -4,13 +4,9 @@ using UnityEngine;
 
 public class Card : MonoBehaviour
 {
-    public int Num { get; private set; } = 0;
-
-    //public GameEvent onGrabEvent;
-
     private Animator selectionStateAnimator;
 
-    private CardGameMgr mgr;
+    private CardGameMgr cardGameMgr;
 
     // WBREWER TODO: Move this to a constants file on the gamemgr singleton?
     public enum SelectionState
@@ -20,16 +16,54 @@ public class Card : MonoBehaviour
         Selected = 2
     }
 
-    public SelectionState State { get; set; }
+    public enum Zone
+    {
+        Deck = 0,
+        Hand = 1,
+        Discard = 2
+    }
+
+    private SelectionState _currentState = 0;
+    public SelectionState CurrentState
+    {
+        get
+        {
+            return _currentState;
+        }
+        set
+        {
+            _currentState = value;
+
+            if (selectionStateAnimator)
+            {
+                selectionStateAnimator.SetInteger("SelectionState", (int)_currentState);
+            }
+        }
+    }
+
+    private Zone _currentZone;
+    public Zone CurrentZone
+    {
+        get
+        {
+            return _currentZone;
+        }
+        set
+        {
+            _currentZone = value;
+
+            if (selectionStateAnimator)
+            {
+                selectionStateAnimator.SetInteger("CardZone", (int)_currentZone);
+            }
+        }
+    }
 
     // Start is called before the first frame update
     void Start()
     {
-        // Create and store a random number at creation
-        Num = Random.Range(0, 10);
-
         // Grab GameMgr
-        mgr = CardGameMgr.Instance;
+        cardGameMgr = CardGameMgr.Instance;
 
         // Grab anim component
         selectionStateAnimator = this.GetComponent<Animator>();
@@ -42,34 +76,34 @@ public class Card : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(State == SelectionState.Selected)
-        {
-            this.transform.position = Input.mousePosition;
-        }
+
     }
 
     void OnMouseEnter()
     {
         Debug.Log("ON MOUSE ENTER");
 
+        if (CurrentState == SelectionState.Selected
+            || CurrentZone != Zone.Hand)
+        {
+            return;
+        }
+
         // WBREWER TODO: Is there a better way to get this property to the animator?
-        State = SelectionState.Highlighted;
-        mgr.SetHighlightedCard(gameObject);
-        selectionStateAnimator.SetInteger("SelectionState", (int)SelectionState.Highlighted);
+        CurrentState = SelectionState.Highlighted;
     }
 
     private void OnMouseExit()
     {
         Debug.Log("ON MOUSE EXIT");
 
-        // WBREWER TODO: Is there a better way to get this property to the animator?
-        State = SelectionState.Idle;
-        mgr.SetHighlightedCard(null);
-        selectionStateAnimator.SetInteger("SelectionState", (int)SelectionState.Idle);
-    }
+        if (CurrentState == SelectionState.Selected
+            || CurrentZone != Zone.Hand)
+        {
+            return;
+        }
 
-    public void OnGrabEvent()
-    {
-        Debug.Log("Card::OnGrabEvent()!");
+        // WBREWER TODO: Is there a better way to get this property to the animator?
+        CurrentState = SelectionState.Idle;
     }
 }

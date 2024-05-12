@@ -12,9 +12,8 @@ GameObject:
   - component: {fileID: -8406808139715411027}
   - component: {fileID: -8199791128930137839}
   - component: {fileID: -3241905150895451499}
-  - component: {fileID: 3807528242181860495}
   - component: {fileID: 7472313133727125250}
-  - component: {fileID: -6279113304413632526}
+  - component: {fileID: 698112663916074061}
   m_Layer: 0
   m_Name: Card
   m_TagString: Untagged
@@ -61,7 +60,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 823a830fd2e8249e88a3ac7c069c5fec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  kSpeed: 0.02
+  kSpeed: 20
 --- !u!212 &-3241905150895451499
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -114,27 +113,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!95 &3807528242181860495
-Animator:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8881506892125193642}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: c89fa81c1d6da4962b919a68dba28906, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!61 &7472313133727125250
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -180,31 +158,24 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 2.0380151, y: 2.8198805}
   m_EdgeRadius: 0
---- !u!114 &-6279113304413632526
-MonoBehaviour:
+--- !u!95 &698112663916074061
+Animator:
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8881506892125193642}
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6f261d3bb6faa4dc8b41de97f59de4b1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gameEvent: {fileID: 11400000, guid: d1eb39685e77f4b87a5d70cc6f9977ef, type: 2}
-  onEventTriggered:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: -8406808139715411027}
-        m_TargetAssemblyTypeName: Card, Assembly-CSharp
-        m_MethodName: OnGrabEvent
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 98ecd9642beae4686b7b86e03a4819e8, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

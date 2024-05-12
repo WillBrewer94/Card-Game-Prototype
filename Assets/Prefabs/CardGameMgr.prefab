@@ -69,6 +69,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   grabEvent: {fileID: 11400000, guid: d1eb39685e77f4b87a5d70cc6f9977ef, type: 2}
+  releaseEvent: {fileID: 11400000, guid: 1a33d9e92fcd74337ab0dd52554aee1b, type: 2}
 --- !u!114 &5665200323376515242
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -98,7 +99,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 513219085459654099}
         m_TargetAssemblyTypeName: InputMgr, Assembly-CSharp
-        m_MethodName: Grab
+        m_MethodName: GrabRelease
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

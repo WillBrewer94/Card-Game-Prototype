@@ -27,15 +27,14 @@ public class MoveToPoint : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //if (Input.GetMouseButtonDown(0))
-        //{
-        //    lastClickedPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        //    Debug.Log("Pressed left click.");
-        //}
-
-        if(cardComp.State == Card.SelectionState.Idle)
+        if (cardComp.CurrentState == Card.SelectionState.Selected)
         {
-            transform.position = Vector2.MoveTowards(transform.position, TargetPosition, kSpeed);
+            Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            transform.position = mousePos;
+        }
+        else
+        {
+            transform.position = Vector2.MoveTowards(transform.position, TargetPosition, kSpeed * Time.deltaTime);
         }
     }
 }

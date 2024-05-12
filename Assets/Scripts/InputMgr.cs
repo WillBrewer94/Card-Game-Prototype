@@ -53,9 +53,9 @@ public class InputMgr : MonoBehaviour
     //public static event Action OnGrabEvent;
 
     public GameEvent grabEvent;
-    public void Grab(InputAction.CallbackContext context)
+    public GameEvent releaseEvent;
+    public void GrabRelease(InputAction.CallbackContext context)
     {
-        //grabEvent.TriggerEvent();
         if(context.performed)
         {
             Debug.Log("Grab Input Pressed!");
@@ -64,6 +64,8 @@ public class InputMgr : MonoBehaviour
         else if(context.canceled)
         {
             Debug.Log("Grab Input Released!");
+            releaseEvent.TriggerEvent();
         }
     }
+
 }

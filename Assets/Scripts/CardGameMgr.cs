@@ -77,11 +77,19 @@ public class CardGameMgr : MonoBehaviour
         // Initialize a deck of card gameobjects
         for (int i = 0; i < deckSize; ++i)
         {
-            GameObject gameObject = Instantiate(cardPrefab);
+            // Instantiate new card
+            GameObject newCard = Instantiate(cardPrefab);
+            deck.Add(newCard);
 
-            gameObject.transform.position = Camera.main.ScreenToWorldPoint(deckAnchorPoint.transform.position);
+            // Set created card zone to deck
+            Card cardComp = newCard.GetComponent<Card>();
+            if (cardComp != null)
+            {
+                cardComp.CurrentZone = Card.Zone.Deck;
+            }
 
-            deck.Add(gameObject);
+            // Set position to deck anchor point
+            newCard.transform.position = Camera.main.ScreenToWorldPoint(deckAnchorPoint.transform.position);
         }
     }
 
@@ -128,11 +136,19 @@ public class CardGameMgr : MonoBehaviour
             return;
         }
 
+        // Draw card from deck and add to hand
         GameObject drawnCard = deck[deck.Count - 1];
         hand.Add(drawnCard);
         deck.RemoveAt(deck.Count - 1);
 
+        // Set cards zone
+        Card card = drawnCard.GetComponent<Card>();
+        if (card != null)
+        {
+            card.CurrentZone = Card.Zone.Hand;
+        }
 
+        // Find out what the card's position should be 
         // Find number of segments based on hand size
         int segmentCount = hand.Count + 1;
 
@@ -153,60 +169,8 @@ public class CardGameMgr : MonoBehaviour
             }
         }
 
-        // Move drawn card to anchor point on screen
-        //MoveToPoint moveMe = drawnCard.GetComponent<MoveToPoint>();
-        //if(moveMe != null && handAnchorPoints.Count > 0)
-        //{
-        //    Vector2 worldSpacePoint = Camera.main.ScreenToWorldPoint(handAnchorPoints[handAnchorIdx].transform.position);
-        //    MoveToPoint moveMeComponent = drawnCard.GetComponent<MoveToPoint>();
-
-        //    if(moveMeComponent != null)
-        //    {
-        //        moveMeComponent.TargetPosition = worldSpacePoint;
-        //    }
-        //}
-
         handAnchorIdx++;
     }
-
-    //public void Grab(InputAction.CallbackContext context)
-    //{
-    //    if(context.performed)
-    //    {
-    //        Debug.Log("CLICK!");
-
-    //        if (highlightedCard != null)
-    //        {
-    //            Debug.Log("Grabbing highlighted card!");
-    //            Card card = highlightedCard.GetComponent<Card>();
-    //            if(card != null)
-    //            {
-    //                selectedCard = highlightedCard;
-    //                card.State = Card.SelectionState.Selected;
-    //            }
-    //        }
-    //        else
-    //        {
-    //            Debug.Log("CardGameMgr::Grab() highlighted card is null!");
-    //        }
-    //    }
-    //    else if(context.canceled)
-    //    {
-    //        Debug.Log("RELEASE!");
-
-    //        if(highlightedCard != null)
-    //        {
-    //            Debug.Log("Releasing highlighted card!");
-    //            Card card = highlightedCard.GetComponent<Card>();
-    //            if (card != null)
-    //            {
-    //                card.State = Card.SelectionState.Idle;
-    //            }
-    //        }
-
-    //        selectedCard = null;
-    //    }
-    //}
 
     public void SetHighlightedCard(GameObject card)
     {
