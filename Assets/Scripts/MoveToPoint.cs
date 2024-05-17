@@ -6,7 +6,7 @@ public class MoveToPoint : MonoBehaviour
 {
     public float kSpeed = 5;
 
-    public Vector2 TargetPosition { private get; set; }
+    public Vector2 TargetPosition { get; set; }
 
     private Card cardComp;
 

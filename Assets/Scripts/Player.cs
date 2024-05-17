@@ -4,26 +4,51 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    GameObject selectedCard;
+    // Private
+    private string prevCardSortingLayer = "Default";
 
-    Ray mouseRay;
-    RaycastHit hit;
+    private Card lastHitCard;
+    private Card selectedCard;
 
     // Start is called before the first frame update
     void Start()
     {
-        
     }
 
     // Update is called once per frame
     void Update()
     {
-        //// Check collision here
-        //Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        //if (Physics2D.Raycast(mousePos, Vector2.zero))
-        //{
-        //    Debug.Log("Card collision!");
-        //}
+        if (selectedCard == null)
+        {
+            // Check collision here
+            Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero);
+            if (hit)
+            {
+                Debug.Log("Card collision!");
+                GameObject hitObj = hit.transform.gameObject;
+                if (hitObj)
+                {
+                    Card hitCard = hitObj.GetComponent<Card>();
+                    if (hitCard && hitCard.CurrentState == Card.SelectionState.Idle)
+                    {
+                        if (lastHitCard)
+                        {
+                            lastHitCard.CurrentState = Card.SelectionState.Idle;
+                            lastHitCard = null;
+                        }
+
+                        lastHitCard = hitCard;
+                        hitCard.CurrentState = Card.SelectionState.Highlighted;
+                    }
+                }
+            }
+            else if (lastHitCard)
+            {
+                lastHitCard.CurrentState = Card.SelectionState.Idle;
+                lastHitCard = null;
+            }
+        }
     }
 
     public void OnGrabEvent()
@@ -34,13 +59,19 @@ public class Player : MonoBehaviour
         if (hit)
         {
             Debug.Log("Card collision!");
-            selectedCard = hit.transform.gameObject;
-
-            Card hitCard = selectedCard.GetComponent<Card>();
-
-            if (hitCard)
+            GameObject hitObj = hit.transform.gameObject;
+            if (hitObj)
             {
-                hitCard.CurrentState = Card.SelectionState.Selected;
+                Card hitCard = hitObj.GetComponent<Card>();
+                if (hitCard && hitCard.CurrentZone == Card.Zone.Hand)
+                {
+                    selectedCard = hitCard;
+                    hitCard.CurrentState = Card.SelectionState.Selected;
+                    prevCardSortingLayer = hitCard.SortingLayer;
+
+                    // wbrewer TODO: I don't like this being a raw string, make this an enum somewhere or something
+                    hitCard.SortingLayer = "Focus";
+                }
             }
         }
 
@@ -76,11 +107,14 @@ public class Player : MonoBehaviour
         //    card.State = Card.SelectionState.Idle;
         //}
 
-        Card card = selectedCard.GetComponent<Card>();
-        if (card)
+        if (selectedCard.IsPlayable)
         {
-            card.CurrentState = Card.SelectionState.Idle;
+            selectedCard.Play();
+            CardGameMgr.Instance.AddCardToDisc(selectedCard.gameObject);
         }
+ 
+        selectedCard.CurrentState = Card.SelectionState.Idle;
+        selectedCard.SortingLayer = prevCardSortingLayer;
 
         selectedCard = null;
     }

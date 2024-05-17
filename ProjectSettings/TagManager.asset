@@ -41,3 +41,15 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Deck
+    uniqueID: 3833722875
+    locked: 0
+  - name: Hand
+    uniqueID: 2901094679
+    locked: 0
+  - name: Focus
+    uniqueID: 238706413
+    locked: 0
+  - name: Card Text
+    uniqueID: 3553937961
+    locked: 0

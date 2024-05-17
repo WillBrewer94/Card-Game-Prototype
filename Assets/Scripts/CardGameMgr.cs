@@ -44,12 +44,15 @@ public class CardGameMgr : MonoBehaviour
     [SerializeField]
     private int handSize;
 
-    public List<GameObject> handAnchorPoints;
-    public GameObject       deckAnchorPoint;
+    public GameObject handAnchorLeft;
+    public GameObject handAnchorRight;
+    public GameObject deckAnchorPoint;
+    public GameObject discAnchorPoint;
 
     // Private Members
     private List<GameObject> deck;
     private List<GameObject> hand;
+    private List<GameObject> disc;
 
     private int handAnchorIdx = 0;
 
@@ -61,6 +64,7 @@ public class CardGameMgr : MonoBehaviour
     {
         deck = new List<GameObject>(deckSize);
         hand = new List<GameObject>(handSize);
+        disc = new List<GameObject>(deckSize);
 
         if (cardPrefab == null)
         {
@@ -69,6 +73,12 @@ public class CardGameMgr : MonoBehaviour
         }
 
         if(deckAnchorPoint == null)
+        {
+            Debug.LogError("deckAnchorPoint prefab is NULL!");
+            return;
+        }
+
+        if (discAnchorPoint == null)
         {
             Debug.LogError("deckAnchorPoint prefab is NULL!");
             return;
@@ -89,7 +99,7 @@ public class CardGameMgr : MonoBehaviour
             }
 
             // Set position to deck anchor point
-            newCard.transform.position = Camera.main.ScreenToWorldPoint(deckAnchorPoint.transform.position);
+            newCard.transform.position = deckAnchorPoint.transform.position;
         }
     }
 
@@ -103,10 +113,19 @@ public class CardGameMgr : MonoBehaviour
     {
         Debug.Log("Shuffling!");
 
-        if (deck.Count == 0)
+        foreach(GameObject obj in disc)
         {
-            return;
+            deck.Add(obj);
+            Card card = obj.GetComponent<Card>();
+            if (card)
+            {
+                card.CurrentZone = Card.Zone.Deck;
+            }
+
+            MoveToPoint moveMeComp = obj.GetComponent<MoveToPoint>();
+            moveMeComp.TargetPosition = deckAnchorPoint.transform.position;
         }
+        disc.Clear();
 
         // Fischer-Yates Shuffle
         int currIdx = deck.Count;
@@ -146,14 +165,15 @@ public class CardGameMgr : MonoBehaviour
         if (card != null)
         {
             card.CurrentZone = Card.Zone.Hand;
+            card.OrderInLayer = handSize - hand.Count;
         }
 
         // Find out what the card's position should be 
         // Find number of segments based on hand size
         int segmentCount = hand.Count + 1;
 
-        Vector2 leftPos = Camera.main.ScreenToWorldPoint(handAnchorPoints[0].transform.position);
-        Vector2 rightPos = Camera.main.ScreenToWorldPoint(handAnchorPoints[handAnchorPoints.Count-1].transform.position);
+        Vector2 leftPos = handAnchorLeft.transform.position;
+        Vector2 rightPos = handAnchorRight.transform.position;
         float dist = Vector2.Distance(leftPos, rightPos);
         float segmentLen = dist / segmentCount;
 
@@ -170,6 +190,27 @@ public class CardGameMgr : MonoBehaviour
         }
 
         handAnchorIdx++;
+    }
+
+    public void AddCardToDisc(GameObject cardToDisc)
+    {
+        // Find card in hand
+        foreach(GameObject card in hand)
+        {
+            if (card == cardToDisc)
+            {
+                hand.Remove(cardToDisc);
+                disc.Add(cardToDisc);
+
+                MoveToPoint moveMeComp = cardToDisc.GetComponent<MoveToPoint>();
+                if (moveMeComp)
+                {
+                    moveMeComp.TargetPosition = discAnchorPoint.transform.position;
+                }
+
+                return;
+            }
+        }
     }
 
     public void SetHighlightedCard(GameObject card)
