@@ -123,7 +123,7 @@ ScriptedImporter:
   animatedSpriteImportData:
   - name: deck_zone
     originalName: 
-    pivot: {x: 0.5555556, y: -0.19230771}
+    pivot: {x: 0.5, y: -0.11538462}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
@@ -153,8 +153,8 @@ ScriptedImporter:
     - name: deck_zone
       frameIndex: 0
       cellRect:
-        x: 8
-        y: 5
+        x: 7
+        y: 3
         width: 18
         height: 26
       spriteId: 63f86d91061714a049722aba2d4a8f84
@@ -164,4 +164,4 @@ ScriptedImporter:
   generatePhysicsShape: 0
   secondarySpriteTextures: []
   spritePackingTag: 
-  canvasSize: {x: 36, y: 36}
+  canvasSize: {x: 32, y: 32}

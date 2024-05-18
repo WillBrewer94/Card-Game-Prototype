@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 using UnityEngine.InputSystem;
 
 
 public class CardGameMgr : MonoBehaviour
 {
+    // Singleton Registration
     #region Singleton
     private static CardGameMgr _instance;
 
@@ -24,11 +26,11 @@ public class CardGameMgr : MonoBehaviour
 
     private void Awake()
     {
-        if(_instance == null)
+        if (_instance == null)
         {
             _instance = this;
         }
-        else if(Instance != this)
+        else if (Instance != this)
         {
             Destroy(this);
         }
@@ -39,11 +41,27 @@ public class CardGameMgr : MonoBehaviour
     public GameObject cardPrefab;
 
     [SerializeField]
-    private int deckSize;
+    private int kDeckSize;
 
     [SerializeField]
-    private int handSize;
+    private int kHandSize;
 
+    [SerializeField]
+    private int kCardsDrawnPerTurn;
+
+    [SerializeField]
+    private float kCardDrawWaitTime = 0.5f;
+
+    [SerializeField]
+    private int kStartingMana;
+
+    [SerializeField]
+    private int kStartingManaMax;
+
+    [SerializeField]
+    private int kManaIncrementPerTurn;
+
+    public GameObject currentManaText;
     public GameObject handAnchorLeft;
     public GameObject handAnchorRight;
     public GameObject deckAnchorPoint;
@@ -54,6 +72,46 @@ public class CardGameMgr : MonoBehaviour
     private List<GameObject> hand;
     private List<GameObject> disc;
 
+    private TextMeshProUGUI manaTextMesh;
+
+    private int _currentMana;
+    public int CurrentMana
+    {
+        get
+        {
+            return _currentMana;
+        }
+        set
+        {
+            _currentMana = value;
+
+            manaTextMesh = currentManaText.GetComponent<TextMeshProUGUI>();
+            if (manaTextMesh)
+            {
+                manaTextMesh.SetText("{0}/{1}", _currentMana, CurrentManaMax);
+            }
+        }
+    }
+
+    private int _currentManaMax;
+    public int CurrentManaMax
+    {
+        get
+        {
+            return _currentManaMax;
+        }
+        set
+        {
+            _currentManaMax = value;
+
+            manaTextMesh = currentManaText.GetComponent<TextMeshProUGUI>();
+            if (manaTextMesh)
+            {
+                manaTextMesh.SetText("{0}/{1}", CurrentMana, _currentManaMax);
+            }
+        }
+    }
+
     private int handAnchorIdx = 0;
 
     private GameObject highlightedCard;
@@ -62,9 +120,9 @@ public class CardGameMgr : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        deck = new List<GameObject>(deckSize);
-        hand = new List<GameObject>(handSize);
-        disc = new List<GameObject>(deckSize);
+        deck = new List<GameObject>(kDeckSize);
+        hand = new List<GameObject>(kHandSize);
+        disc = new List<GameObject>(kDeckSize);
 
         if (cardPrefab == null)
         {
@@ -84,8 +142,14 @@ public class CardGameMgr : MonoBehaviour
             return;
         }
 
+        if (currentManaText == null)
+        {
+            Debug.LogError("currentManaText prefab is NULL!");
+            return;
+        }
+
         // Initialize a deck of card gameobjects
-        for (int i = 0; i < deckSize; ++i)
+        for (int i = 0; i < kDeckSize; ++i)
         {
             // Instantiate new card
             GameObject newCard = Instantiate(cardPrefab);
@@ -95,7 +159,7 @@ public class CardGameMgr : MonoBehaviour
             Card cardComp = newCard.GetComponent<Card>();
             if (cardComp != null)
             {
-                cardComp.CurrentZone = Card.Zone.Deck;
+                cardComp.CurrentZone = Constants.Zone.Deck;
             }
 
             // Set position to deck anchor point
@@ -119,7 +183,7 @@ public class CardGameMgr : MonoBehaviour
             Card card = obj.GetComponent<Card>();
             if (card)
             {
-                card.CurrentZone = Card.Zone.Deck;
+                card.CurrentZone = Constants.Zone.Deck;
             }
 
             MoveToPoint moveMeComp = obj.GetComponent<MoveToPoint>();
@@ -143,7 +207,7 @@ public class CardGameMgr : MonoBehaviour
 
     public void Draw()
     {
-        if(hand.Count >= handSize)
+        if(hand.Count >= kHandSize)
         {
             Debug.Log("Hit hand size limit!");
             return;
@@ -164,32 +228,38 @@ public class CardGameMgr : MonoBehaviour
         Card card = drawnCard.GetComponent<Card>();
         if (card != null)
         {
-            card.CurrentZone = Card.Zone.Hand;
-            card.OrderInLayer = handSize - hand.Count;
+            card.CurrentZone = Constants.Zone.Hand;
+            card.OrderInLayer = kHandSize - hand.Count;
         }
 
-        // Find out what the card's position should be 
-        // Find number of segments based on hand size
-        int segmentCount = hand.Count + 1;
+        RecalculateHandSpacing();
+    }
 
-        Vector2 leftPos = handAnchorLeft.transform.position;
-        Vector2 rightPos = handAnchorRight.transform.position;
-        float dist = Vector2.Distance(leftPos, rightPos);
-        float segmentLen = dist / segmentCount;
-
-        // Find half-way point for distance between two anchors
-        for (int i = 0; i < hand.Count; ++i)
+    public void StartGame()
+    {
+        // Set initial mana
+        manaTextMesh = currentManaText.GetComponent<TextMeshProUGUI>();
+        if (manaTextMesh == null)
         {
-            MoveToPoint moveMeComponent = hand[i].GetComponent<MoveToPoint>();
-            if(moveMeComponent)
-            {
-                Vector2 targetPos = leftPos;
-                targetPos.x += segmentLen * (i + 1);
-                moveMeComponent.TargetPosition = targetPos;
-            }
+            Debug.LogError("currentManaText object missing TextMeshProUGUI component!");
+            return;
+        }
+        else
+        {
+            CurrentMana = kStartingMana;
+            CurrentManaMax = kStartingManaMax;
+            manaTextMesh.SetText("{0}/{1}", CurrentMana, CurrentManaMax);
         }
 
-        handAnchorIdx++;
+        // Draw starting hand coroutine up to hand size
+        StartCoroutine(DrawCards(kHandSize));
+    }
+
+    public void EndTurn()
+    {
+        CurrentManaMax += kManaIncrementPerTurn;
+        CurrentMana = CurrentManaMax;
+        StartCoroutine(DrawCards(kCardsDrawnPerTurn));
     }
 
     public void AddCardToDisc(GameObject cardToDisc)
@@ -208,9 +278,11 @@ public class CardGameMgr : MonoBehaviour
                     moveMeComp.TargetPosition = discAnchorPoint.transform.position;
                 }
 
-                return;
+                break;
             }
         }
+
+        RecalculateHandSpacing();
     }
 
     public void SetHighlightedCard(GameObject card)
@@ -225,5 +297,40 @@ public class CardGameMgr : MonoBehaviour
         }
 
         highlightedCard = card;
+    }
+
+    private void RecalculateHandSpacing()
+    {
+        // Find out what the card's position should be 
+        // Find number of segments based on hand size
+        int segmentCount = hand.Count + 1;
+
+        Vector2 leftPos = handAnchorLeft.transform.position;
+        Vector2 rightPos = handAnchorRight.transform.position;
+        float dist = Vector2.Distance(leftPos, rightPos);
+        float segmentLen = dist / segmentCount;
+
+        // Find half-way point for distance between two anchors
+        for (int i = 0; i < hand.Count; ++i)
+        {
+            MoveToPoint moveMeComponent = hand[i].GetComponent<MoveToPoint>();
+            if (moveMeComponent)
+            {
+                Vector2 targetPos = leftPos;
+                targetPos.x += segmentLen * (i + 1);
+                moveMeComponent.TargetPosition = targetPos;
+            }
+        }
+
+        handAnchorIdx++;
+    }
+
+    private IEnumerator DrawCards(int numCards)
+    {
+        for(int cardsDrawn = 0; cardsDrawn < numCards; cardsDrawn += 1)
+        {
+            Draw();
+            yield return new WaitForSeconds(kCardDrawWaitTime);
+        }
     }
 }

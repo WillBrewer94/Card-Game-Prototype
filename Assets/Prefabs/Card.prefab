@@ -99,8 +99,8 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 1
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -168,7 +168,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -10, y: -16.3}
+  m_AnchoredPosition: {x: -10, y: -1.9}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8830263754901291332
@@ -234,7 +234,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 1
   m_HorizontalAlignment: 2
-  m_VerticalAlignment: 256
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -262,7 +262,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: -102.11702, y: -60.192158, z: -223.42725, w: -151.59631}
+  m_margin: {x: -102.11702, y: 16.845922, z: -223.42725, w: -151.59631}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -556,6 +556,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canvasObj: {fileID: 6901140589544755926}
+  manaCostObj: {fileID: 6043697980050301022}
+  nameObj: {fileID: 5498704158632058956}
+  descObj: {fileID: 1601776186877945918}
   kCardPlayThreshhold: 2
 --- !u!114 &-8199791128930137839
 MonoBehaviour:
@@ -654,7 +657,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.010570645, y: -0.05513811}
+  m_Offset: {x: -0.0012882948, y: -0.039667487}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -665,7 +668,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 2.0380151, y: 2.9713078}
+  m_Size: {x: 2.0194504, y: 2.9403665}
   m_EdgeRadius: 0
 --- !u!95 &698112663916074061
 Animator:

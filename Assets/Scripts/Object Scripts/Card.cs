@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class Card : MonoBehaviour
 {
@@ -9,7 +10,12 @@ public class Card : MonoBehaviour
     private SpriteRenderer spriteRendererComp;
     private MoveToPoint moveMeComp;
     private CardGameMgr cardGameMgr;
+
+    // Card Canvas References
     public GameObject canvasObj;
+    public GameObject manaCostObj;
+    public GameObject nameObj;
+    public GameObject descObj;
 
     // Editor Constants
     public float kCardPlayThreshhold;
@@ -69,23 +75,8 @@ public class Card : MonoBehaviour
         }
     }
 
-    // WBREWER TODO: Move this to a constants file on the gamemgr singleton?
-    public enum SelectionState
-    {
-        Idle = 0,
-        Highlighted = 1,
-        Selected = 2
-    }
-
-    public enum Zone
-    {
-        Deck = 0,
-        Hand = 1,
-        Discard = 2
-    }
-
-    private SelectionState _currentState = 0;
-    public SelectionState CurrentState
+    private Constants.SelectionState _currentState = 0;
+    public Constants.SelectionState CurrentState
     {
         get
         {
@@ -102,8 +93,8 @@ public class Card : MonoBehaviour
         }
     }
 
-    private Zone _currentZone;
-    public Zone CurrentZone
+    private Constants.Zone _currentZone;
+    public Constants.Zone CurrentZone
     {
         get
         {
@@ -118,7 +109,7 @@ public class Card : MonoBehaviour
                 selectionStateAnimatorComp.SetInteger("CardZone", (int)_currentZone);
             }
 
-            if (_currentZone == Zone.Deck)
+            if (_currentZone == Constants.Zone.Deck)
             {
                 canvasObj.SetActive(false);
             }
@@ -129,13 +120,13 @@ public class Card : MonoBehaviour
 
             switch (_currentZone)
             {
-                case Zone.Deck:
+                case Constants.Zone.Deck:
                     SortingLayer = "Deck";
                     return;
-                case Zone.Hand:
+                case Constants.Zone.Hand:
                     SortingLayer = "Hand";
                     return;
-                case Zone.Discard:
+                case Constants.Zone.Discard:
                     SortingLayer = "Discard";
                     return;
                 default:
@@ -144,6 +135,8 @@ public class Card : MonoBehaviour
             }
         }
     }
+
+    public int CurrentCardManaCost { get; set; }
 
     // Start is called before the first frame update
     void Start()
@@ -170,6 +163,25 @@ public class Card : MonoBehaviour
         {
            Debug.LogError("MoveToPoint component not found!");
         }
+
+        moveMeComp = this.GetComponent<MoveToPoint>();
+        if (moveMeComp == null)
+        {
+            Debug.LogError("MoveToPoint component not found!");
+        }
+
+        if (manaCostObj == null || nameObj == null || descObj == null)
+        {
+            Debug.LogError("manaCostObj/nameObj/descObj not found!");
+        }
+
+        // WBREWER TESTING: Set up initial mana costs for testing
+        CurrentCardManaCost = Random.Range(1, 4);
+        TextMeshProUGUI manaTextMesh = manaCostObj.GetComponent<TextMeshProUGUI>();
+        if (manaTextMesh)
+        {
+            manaTextMesh.SetText("{0}", CurrentCardManaCost);
+        }
     }
 
     // Update is called once per frame
@@ -177,7 +189,8 @@ public class Card : MonoBehaviour
     {
         // wbrewer TODO: Add mana cost checking here
         float moveDelta = Mathf.Abs(moveMeComp.TargetPosition.y - this.transform.position.y);
-        if (CurrentState == SelectionState.Selected && moveDelta >= kCardPlayThreshhold)
+        if (CurrentState == Constants.SelectionState.Selected && moveDelta >= kCardPlayThreshhold
+            && CurrentCardManaCost <= CardGameMgr.Instance.CurrentMana)
         {
             IsPlayable = true;
         }

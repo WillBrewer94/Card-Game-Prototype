@@ -27,7 +27,7 @@ public class MoveToPoint : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (cardComp.CurrentState == Card.SelectionState.Selected)
+        if (cardComp.CurrentState == Constants.SelectionState.Selected)
         {
             Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             transform.position = mousePos;

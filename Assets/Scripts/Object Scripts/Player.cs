@@ -30,22 +30,22 @@ public class Player : MonoBehaviour
                 if (hitObj)
                 {
                     Card hitCard = hitObj.GetComponent<Card>();
-                    if (hitCard && hitCard.CurrentState == Card.SelectionState.Idle)
+                    if (hitCard && hitCard.CurrentState == Constants.SelectionState.Idle)
                     {
                         if (lastHitCard)
                         {
-                            lastHitCard.CurrentState = Card.SelectionState.Idle;
+                            lastHitCard.CurrentState = Constants.SelectionState.Idle;
                             lastHitCard = null;
                         }
 
                         lastHitCard = hitCard;
-                        hitCard.CurrentState = Card.SelectionState.Highlighted;
+                        hitCard.CurrentState = Constants.SelectionState.Highlighted;
                     }
                 }
             }
             else if (lastHitCard)
             {
-                lastHitCard.CurrentState = Card.SelectionState.Idle;
+                lastHitCard.CurrentState = Constants.SelectionState.Idle;
                 lastHitCard = null;
             }
         }
@@ -63,10 +63,10 @@ public class Player : MonoBehaviour
             if (hitObj)
             {
                 Card hitCard = hitObj.GetComponent<Card>();
-                if (hitCard && hitCard.CurrentZone == Card.Zone.Hand)
+                if (hitCard && hitCard.CurrentZone == Constants.Zone.Hand)
                 {
                     selectedCard = hitCard;
-                    hitCard.CurrentState = Card.SelectionState.Selected;
+                    hitCard.CurrentState = Constants.SelectionState.Selected;
                     prevCardSortingLayer = hitCard.SortingLayer;
 
                     // wbrewer TODO: I don't like this being a raw string, make this an enum somewhere or something
@@ -78,13 +78,13 @@ public class Player : MonoBehaviour
         //Card card = highlightedCard.GetComponent<Card>();
         //if (card != null)
         //{
-        //    if (card.State != Card.SelectionState.Highlighted)
+        //    if (card.State != Constants.SelectionState.Highlighted)
         //    {
         //        return;
         //    }
 
         //    Debug.Log("Card::OnGrabEvent()!");
-        //    card.State = Card.SelectionState.Selected;
+        //    card.State = Constants.SelectionState.Selected;
         //}
     }
 
@@ -98,22 +98,23 @@ public class Player : MonoBehaviour
         //Card card = selectedCard.GetComponent<Card>();
         //if (card != null)
         //{
-        //    if (card.State != Card.SelectionState.Selected)
+        //    if (card.State != Constants.SelectionState.Selected)
         //    {
         //        return;
         //    }
 
         //    Debug.Log("Card::OnReleaseEvent()!");
-        //    card.State = Card.SelectionState.Idle;
+        //    card.State = Constants.SelectionState.Idle;
         //}
 
         if (selectedCard.IsPlayable)
         {
             selectedCard.Play();
             CardGameMgr.Instance.AddCardToDisc(selectedCard.gameObject);
+            CardGameMgr.Instance.CurrentMana -= selectedCard.CurrentCardManaCost;
         }
  
-        selectedCard.CurrentState = Card.SelectionState.Idle;
+        selectedCard.CurrentState = Constants.SelectionState.Idle;
         selectedCard.SortingLayer = prevCardSortingLayer;
 
         selectedCard = null;
